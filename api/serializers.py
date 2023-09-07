@@ -65,4 +65,4 @@ class CustomerSerializer(serializers.ModelSerializer):
         return obj.spent_money
 
     def get_gems(self, obj):
-        return []
+        return obj.gems

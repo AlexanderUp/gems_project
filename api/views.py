@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from django.db.models.functions import Coalesce
 from rest_framework import status
 from rest_framework.generics import ListAPIView
@@ -75,7 +75,25 @@ class CustomerListAPIView(ListAPIView):
     serializer_class = CustomerSerializer
 
     def get_queryset(self):
-        customers = Customer.objects.select_related('user').annotate(
-            spent_money=Coalesce(Sum('deals__total'), 0),
+        last_deal_packet = DealPacket.objects.first()
+        customers = (
+            Customer.objects.select_related('user')
+            .annotate(
+                spent_money=Coalesce(
+                    Sum(
+                        'deals__total',
+                        filter=Q(deals__deal_packet=last_deal_packet),
+                    ),
+                    0,
+                ),
+                gems=Coalesce(
+                    Sum(
+                        'deals__quantity',
+                        filter=Q(deals__deal_packet=last_deal_packet),
+                    ),
+                    0,
+                ),
+            )
+            .order_by('-spent_money')[:5]
         )
         return customers
