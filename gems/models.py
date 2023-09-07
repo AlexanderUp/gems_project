@@ -70,6 +70,13 @@ class DealPacket(models.Model):
 
 
 class Deal(models.Model):
+    deal_packet = models.ForeignKey(
+        DealPacket,
+        on_delete=models.CASCADE,
+        related_name='deals',
+        verbose_name='deal_packet',
+        help_text='Deal Packet',
+    )
     customer = models.ForeignKey(
         Customer,
         on_delete=models.CASCADE,

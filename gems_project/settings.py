@@ -21,7 +21,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
+    'rest_framework',
     'gems.apps.GemsConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -116,3 +118,5 @@ LOGGING = {
         },
     },
 }
+
+B64ENCODED_FILE_NAME_LENGTH_BYTES: int = 2
