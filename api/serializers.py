@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
 from api.fields import Base64FileField
-from gems.models import Deal
+from gems.models import Customer, Deal
 
 
 class DealBase64EncodedCSVFileSerializer(serializers.Serializer):
@@ -43,3 +43,26 @@ class DealSerializer(serializers.ModelSerializer):
             'quantity',
             'date',
         )
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField()
+    spent_money = serializers.SerializerMethodField()
+    gems = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Customer
+        fields = (
+            'username',
+            'spent_money',
+            'gems',
+        )
+
+    def get_username(self, obj):
+        return obj.username
+
+    def get_spent_money(self, obj):
+        return obj.spent_money
+
+    def get_gems(self, obj):
+        return []

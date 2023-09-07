@@ -2,11 +2,18 @@ import datetime
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
 from rest_framework import status
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from api.serializers import DealBase64EncodedCSVStringSerializer, DealSerializer
+from api.serializers import (
+    CustomerSerializer,
+    DealBase64EncodedCSVStringSerializer,
+    DealSerializer,
+)
 from api.utils import (
     csv_dict_reader_from_base64,
     get_customer_instance,
@@ -18,12 +25,9 @@ from gems.models import Customer, Deal, DealPacket, Gem
 User = get_user_model()
 
 
-class DealCreateAPIView(CreateAPIView):
-    serializer_class = DealBase64EncodedCSVStringSerializer
-    queryset = DealPacket.objects.all()
-
+class DealCreateAPIView(APIView):
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = DealBase64EncodedCSVStringSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         csv_data = serializer.validated_data['csv_data']
@@ -65,3 +69,13 @@ class DealCreateAPIView(CreateAPIView):
 
         deal_serializer = DealSerializer(deals, many=True)
         return Response(deal_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class CustomerListAPIView(ListAPIView):
+    serializer_class = CustomerSerializer
+
+    def get_queryset(self):
+        customers = Customer.objects.select_related('user').annotate(
+            spent_money=Coalesce(Sum('deals__total'), 0),
+        )
+        return customers

@@ -27,14 +27,6 @@ class Customer(models.Model):
     def username(self):
         return self.user.username
 
-    @property
-    def spent_money(self):
-        return 'Not implemented'
-
-    @property
-    def gems(self):
-        return 'Not implemented'
-
 
 class Gem(models.Model):
     name = models.CharField(
