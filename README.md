@@ -30,25 +30,22 @@ pip install -r requirements/dev.txt
 
 | Переменная | Значение по умолчанию | Описание |
 | --- | --- | --- |
-| DEBUG | False | Режим отладки |
+| DEBUG | True | Режим отладки |
 | SECRET_KEY | None | `from django.core.management.utils import get_random_secret_key; get_random_secret_key()` |
 
-```
 ### Применить миграции
 ```
 python manage.py migrate
 ```
+
 ### Создать суперпользователя
 ```
 python manage.py createsuperuser
 ```
+
 ### Запустить сервер
 ```
 python manage.py runserver
-```
-### Запустить тесты
-```
-pytest
 ```
 
 ### Установка pre-commit хуков
